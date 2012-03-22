@@ -1,0 +1,664 @@
+\documentclass[12pt,reqno, a4paper]{article}
+\usepackage{graphicx}
+\usepackage[3D]{movie15}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts}
+\usepackage{bbm}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{bbm}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage{booktabs}
+\IfFileExists{ajr.sty}{\usepackage{ajr}}{}
+\usepackage{url}
+\usepackage{amssymb, latexsym, amsthm}
+\newcommand{\Ord}[1]{\ensuremath{\mathcal O\big(#1\big)}}
+\newcommand{\rat}[2]{{\textstyle\frac{#1}{#2}}}
+\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{doi:#1}}
+\newcommand{\Z}[1]{\ensuremath{e^{#1 t}\star}}
+\newcommand{\Za}[1]{\ifcase#1 undef0
+  \or undef1
+  \or\Z{-\rat{27}{10}}
+  \or\Z{-\rat{38}{5}}
+  \else undefinf \fi}
+\newcommand{\Zb}[1]{\ifcase#1 undef0
+  \or\Z{-\rat{2}{\epsilon}}
+  \or\Z{-\rat{5}{\epsilon}}
+  \or\Z{-\rat{10}{\epsilon}}
+  \else undefinf \fi}
+\newcommand{\dd}{{\mathrm{d}}}
+\newcommand{\PP}{{\mathrm{P}}}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+ \numberwithin{equation}{section}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\err}{\operatorname{\textsc{mae}}}% median absolute error??
+\newcommand{\rms}{\operatorname{\textsc{rms}}}% root-mean-sq error??
+\newcommand{\model}{^{\eqref{eq:linsde}}}
+
+\begin{document}
+\title{ Errors on projective integration of  Ornstein--Uhlenbeck processes}
+
+%\date{December 6, 2011}
+
+\author{
+Xiaopeng Chen\thanks{School of Mathematical Sciences, University of
+Adelaide, Adelaide, \textsc{Australia}. \protect\url{mailto:
+x. chen@adelaide.edu.au} } \and A.~J.
+Roberts\thanks{School of Mathematical Sciences, University of
+Adelaide, Adelaide, \textsc{Australia}.
+\protect\url{mailto:anthony.roberts@adelaide.edu.au}} \and Ioannis G. Kevrekidis\thanks{Department of Chemical and Biological Engineering and Program in Applied and
+Computational Mathematics, Princeton University, Princeton, NJ 08544, \textsc{usa}
+\protect\url{mailto:yannis@princeton.edu}}
+ }
+\date{\today}
+
+
+\maketitle
+
+
+\begin{abstract}
+Projective integration has the potential to be an  effective method to
+compute the long time dynamic behaviour of multiscale systems.   However,   there is some intrinsic difficulty when the behaviour is described by a stochastic process. The improved  projective integration of stochastic processes is explored. The theory errors of projective integration of Ornstein--Uhlenbeck processes are obtained by deriving the bias of the maximum likelihood estimation. The errors estimation of parameters improves some results in either the statistic or econometrics literature.  A number of examples are provided and  Monte Carlo simulation demonstrate how the results is closed to the  error formulas.  
+\end{abstract}
+
+\section{Introduction}
+Projective integration uses bursts of the microscale simulator, using microscale time steps, and computes an approximation to the system over a macroscale time step by extrapolation.  Our recent work concerned about  the projective integration  influenced by  noise~\cite{Chen}.    We  estimate a linear stochastic differential equation  from short bursts of data. The analytic solution of the linear stochastic differential equation then estimates  the solution over a macroscale time step.  
+We have  explored  how the noise affects the projective integration and presented  two numerical algorithms in the empirical exploration. The simulation results shows that the  two methods  are stability and accuracy. We consider a third method which is called Adam-Moulton inspired method.    It appears this version of an Adams--Moulton method is more robust to noise.
+ Monte Carlo simulation results shows that  the method is better in  estimation of the errors of  design parameters.  We focus on the maximum likelihood estimation of the \textsc{sde}
+\begin{eqnarray} \label{14}
+dX=(aX+b)dt+c\,dW,   \quad  X(0)=x_0.
+\end{eqnarray}
+The solution  $X$ is a continuous Markov process with mean, variance function $E[X(t)]=\exp(at)E[X(0)]$, $\operatorname{Var}(X(t))=-\frac {c^2}{2a}+(\operatorname{Var}(X(0))+\frac {c^2}{2a})\exp(2at)$. If $x_0\sim N(0, -\frac {c^2}{2a})$, then  the process is a stationary  Ornstein--Uhlenbeck process. If the distribution of initial condition is not $ N(0, -\frac {c^2}{2a})$, we denote the process a  non-stationary Ornstein--Uhlenbeck process.
+
+
+An early work of the projective integration simulate the errors of the designed parameters~\cite{Chen}, which depends on the bursts and macroscale time step.  We give an analysis errors of the parameters we estimation from the maximum likelihood in the present paper. First we analysis the errors of the estimation of the coefficients.   There are some works about  the estimation of the parameter from the stochastic differential equations~\cite[e.g.]{Ait, Bish, Ste}.  However, there are few works about the errors of  parameters of  non-stationary stochastic Ornstein--Uhlenbeck  equations.  The difficulty is to obtain a closed form of the parameter estimation.   An discreteization approximation to the continuous time stochastic differential equations  is used in estimation of the parameters by Kloeden et al.~\cite{Klo}.  The method is easily to conduct and an explicit expression for the likelihood function is easy found. Some week convergence of the estimation parameters is obtained by Yoshida~\cite{Yosh}.   For approximation to the bias, a basic tool is by taking the stochastic Taylor expansions.    Tang et al.~\cite{Tang, Pe} gave an explicit expressions to  the  errors of the stationary  Ornstein-Uhlenbeck  processes, where the estimator is from the exact likelihood function. It is also important to consider the non-stationary   Ornstein-Uhlenbeck   processes. By using the Euler-like approximation, we present a bias and variance of the parameters estimation of non-stationary   Ornstein-Uhlenbeck  processes. We compute the errors from a burst. Two examples  are given and the  Monte Carlo simulation results shows that the power law is quite closed to the analysis errors we compute.
+
+We also obtain a closed form expression of the parameters estimation from two bursts.  Some relation of the results is the threshold autoregressive mode.   The  threshold autoregressive model~\cite{Cha} is from the unequally spaced data in practice. They maybe partially observed with some missing observations.  %However, we did not find a closed form expression in the references.
+
+We then compute the error of  projective integration of the  Ornstein--Uhlenbeck  equation \eqref{14}. We show the errors  depend on  the number of  data, the burst and the projective integration  time step.
+
+
+%The principle challenge now is to develop stochastic analysis to confirm these empirical Monte Carlo simulation results.
+%We plan analysis based upon stochastic Taylor expansions with the aim of highlighting the main performance limiting aspects of these algorithms, over a wide range of parameters, and hence drive significant improvements.
+%The next step is to  applicate  to the  projective integration of the  stochastic differential equation.
+
+%\section{Projective integration method for the stochastic system}
+\section{Adams-Moulton inspired method}
+
+In the former work we present two version of  projective integration of the stochastic systems~\cite{Chen}.  A variation on the theme of predictor corrector methods is analogous to deterministic Adam--Moulton methods.   Here,  instead of estimating the equation  from just two bursts, the current and first predicted bursts, also use the burst from the preceding time step. We fit the burst with the Ornstein-Uhlenbeck equation \eqref{14}.
+
+
+\begin{itemize}
+\item Execute the microscale simulator for a burst~$[t_n,t'_n]$.
+\item
+For constant $a$~and~$c$ and so take a projective integration time step of
+\begin{equation}
+\hat X_{n+1}=X'_n+a\Delta t+c\Delta W
+\quad\text{for some }\Delta W\sim N(0,\Delta t).
+\label{eq:simple}
+\end{equation}
+
+Then crudely predict to time~$t_{n+1}$ using~\eqref{eq:simple}.
+\item Compute a `predictor' burst over~$[t_{n+1},t'_{n+1}]$;
+\item Fit the maximum likelihood estimation to the \emph{three} bursts over~$[t_{n-1},t'_{n-1}]$, $[t_{n},t'_{n}]$ and~$[t_{n+1},t'_{n+1}]$. Denote the estimation coefficients  as $\hat{a}$, $\hat{b}$,  $\hat{c}$.
+\item  The analytic solution is following: given $X(t'_n,\omega)=X'_n$\,,
+\begin{align}
+X_t=e^{\hat{a}t}(X'_n+\hat{b}\int _0^te^{-as}ds+c\int _0^te^{-\hat{a}s}dW_s).
+\label{eq:sdesol}
+\end{align}
+
+Correct the estimate of~$X(t_{n+1},\omega)$ via solution~\eqref{eq:sdesol}.
+\end{itemize}
+
+\begin{figure}
+\centering
+\begin{tabular}{c@{}c}
+\rotatebox{90}{\hspace{15ex}$X(t)$} &
+\includegraphics[scale=1.4]{burstAdams}\\[-1ex]
+& time $t$
+\end{tabular}
+\caption{three realisations of the `Adams-Moulton' projective integration applied to the  Ornstein-Uhlenbeck equation \eqref{14} simulated with micro-time step $\mathfrak dt=0.001$\,.  In the projective integration:  initial bursts (blue) lasted $\delta t=0.1$\,;  second bursts (green) were started following the simple prediction~\eqref{eq:simple}; and lastly using~\eqref{eq:sdesol} the stochastic projective time step (red) was $\Delta t=0.4$\,.}
+\label{fig:bAM}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics{errorsAdamsB03err}
+\\
+\fbox{
+\includemovie[poster,toolbar,label=errorsAdamsB03err.u3d,text=(errorsAdamsB03err.u3d),
+3Daac=7, 3Droll=7, 3Dc2c=-8 -14 6, 3Droo=17.321085, 3Dcoo=0 0 0,
+3Dlights=CAD,3Drender=SolidWireframe]
+{.5\linewidth}{.5\linewidth}{errorsAdamsB03err.u3d}}
+\parbox[b]{0.45\linewidth}{
+\caption{isosurfaces of an error in projective Adam--Moulton-like integration: the surfaces are for median absolute error $\err=0.01,0.02,0.03$ (in order blue to red, obtained from $300$~realisations).    Roughly, the error fits $\err\approx 0.046\rho^{0.02}(1-r)^{2.1}(\Delta t)^{0.23}$.}
+\label{fig:errorsAdamsB03err}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics{errorsAdamsB03smr}
+\\
+\fbox{
+\includemovie[poster,toolbar,label=errorsAdamsB03smr.u3d,
+text=(errorsAdamsB03smr.u3d),
+3Daac=7, 3Droll=-7, 3Dc2c=-10 -12 8, 3Droo=17.323395, 3Dcoo=0 0 0,
+3Dlights=CAD,3Drender=SolidWireframe]
+{.5\linewidth}{.5\linewidth}{errorsAdamsB03smr.u3d}}
+\parbox[b]{0.45\linewidth}{
+\caption{isosurfaces of the error ratio~$\rms /\err$ in projective Adam--Moulton-like integration: the surfaces are for ratios $2,6,20$ (in order blue to red). Note the change in the scale of the vertical axis.}
+\label{fig:errorsAdamsB03smr}}
+\end{figure}
+
+
+%Figure~\ref{fig:bAM} shows three realisations of one example.
+We applied  the  numerical algorithm  to microscale Ornstein--Uhlenbeck equation
+\begin{eqnarray}\label{eq:egsde}
+dX=(1-X)dt+0.03dW,  \quad X(0)=1.
+\end{eqnarray}
+
+Assessing errors of this scheme is a little more difficult as the scheme depends upon the previous step as well.  Here we record a partial assessment of errors by taking two projective integration steps: the first using one long burst of the microscale process from time~$t_0$, which is then split into two and treated as two regular bursts; and the second step, as in the previous paragrpah, using a burst at time~$t_0$ and a second burst from time~$t_1$. Figure~\ref{fig:bAM} shows the initial long burst from time $t=0$ that is split into two for the initial step.  We then assess the error in the second step which goes from $t\approx0.5$ to $t\approx 1$\,. Figure~\ref{fig:errorsAdamsB03err} plots isosurfaces of the median absolute error when the algorithm, over a range of design parameters, was applied to the example ~\eqref{eq:egsde}. Roughly, the error fits
+\begin{equation}
+\err\approx 0.046\rho^{0.02}(1-r)^{2.1}(\Delta t)^{0.23}.
+\label{eq:amerr}
+\end{equation}
+%Overall this error is a little smaller than that, equation~\eqref{eq:Heunerr}, for the predictor-corrector method of Section~\ref{sec:pcspi}: the slight decrease in error may be due to the overall reduction of size in the solution in the second step compared to the size of the solution in the first step.  Again there is only a very weak dependence upon~$\rho$ which determines the amount of microscale data used to make predictions.
+
+Figure~\ref{fig:errorsAdamsB03err} plots the median absolute errors as these are robust to the outliers in any fat tailed error distribution.  Figure~\ref{fig:errorsAdamsB03smr} plots the ratio between the root mean square and the median absolute errors.  Again the domain of design parameters above the blue surface indicates parameters for which there should be few, if any, outlier predictions. % Noting the change in scale of the vertical axis, this `safe' domain is larger than that for the predictor-corrector method of Section~\ref{sec:pcspi}, see Figure~\ref{fig:errorsHeunB03smr}.        It appears this version of an Adams--Moulton method is more robust to noise.
+
+
+
+
+
+
+\section{The errors of the maximum likelihood estimation of the Ornstein--Uhlenbeck process}
+ Consider
+\begin{eqnarray*}
+dX=(aX+b)dt+c\,dW,   \quad  X(0)=x_0.
+\end{eqnarray*}
+Then the solution
+$X_t=e^{at}(x_0+b\int _0^te^{-as}ds+c\int _0^te^{-as}dW_s)$.
+The Euler scheme to discrete the equation \eqref{14} is
+\begin{eqnarray*}
+X_{j+1}-X_j=(a X_j+b)\mathfrak{d} t_1+c\mathfrak{d} W_j.\end{eqnarray*}
+
+Then $X_{j+1}-X_j$ are independent Gaussian random variables with mean $(a X_j+b)\mathfrak{d} t_1$ and variance $c^2\mathfrak{d} t_1$. Therefore the transition density of the process is
+ $$p(y|x)=\frac 1 {\sqrt{2\pi c^2\mathfrak{d} t_1}}\exp(-\frac 1 2\frac {\left(y-x-(a x+b)\mathfrak{d} t_j\right)^2}{c^2\mathfrak{d} t_j}).$$
+The log-likelihood function for $X_j$, $j=0,\ldots, n$, is
+\begin{eqnarray*}
+\log L_n(a,b,c)=-\frac 1 2 n\log 2\pi c^2-\frac 1 2 \sum \log \mathfrak{d}  t_j-\frac 1 2 \sum \frac { (X_{j+1}-X_{j}-(aX_{j}+b)\mathfrak{d}  t_{j})^2}{ {c^2} \mathfrak{d}  t_j}. \nonumber
+\end{eqnarray*}We find
+$$\hat{a}=\frac n {\delta t} \frac {n\sum X_{j+1}X_j-n\sum X_j^2-\sum( X_{j+1}- X_j) \sum X_j}{n\sum X_j^2-(\sum X_j)^2};$$
+$$\hat{b}=\frac { \sum X_{j+1}-\sum X_{j}-\hat{a}\mathfrak{d} t_1\sum X_j}{\delta t};$$
+$$\hat{c}^2=\frac 1 {\delta t} \sum{(X_{j+1}-X_{j}-(\hat{a}X_{j}+\hat{b})\mathfrak{d}  t_{j})^2}, $$
+where the data is from
+\begin{eqnarray}\label{e22}
+X_{j+1}=(1+a\mathfrak{d} t_1) X_j+b\mathfrak{d} t_1+c\mathfrak{d} W_j.\end{eqnarray}
+The microscale increments $\mathfrak{d} X_j= X_{j+1}- X_{j}$, $j=0, \ldots, n-1$, from a burst of simulation of small time $\delta t=t_n-t_0$  and microscale time increments $\mathfrak{d} t_j=t_{j+1}-t_j$.  We simply write $\sum_{j=0}^{n-1}$ as $\sum$ and consider the the same time span $\mathfrak{d} t_j$.
+
+When compute the high order random variables, we use the Wick's theorem~\cite{Jan}.
+\begin{lemma}Let $\xi_1$,  $\xi_2$,  $\xi_3$,  $\xi_4$ be a Gaussian random vector with zero mean. Then
+$$E(\xi_1\xi_2\xi_3\xi_4)=E\xi_1\xi_2E\xi_3\xi_4+E\xi_1\xi_3E\xi_2\xi_4+E\xi_1\xi_4E\xi_2\xi_3.$$ \end{lemma}
+\begin{theorem}\label{th1}For the Ornstein--Uhlenbeck equation \eqref{14}, as $n\to \infty$, we have the following errors of the parameter estimation.
+$$E\hat{a}=a+C+O(n^{-1}).$$
+ $$\operatorname{Var}\hat{a}=D+O(n^{-1}).$$
+$$E\hat{b}=b+C\frac b a( \frac {\exp(a\delta t)-1}{a\delta t}-1)+O(n^{-1}).$$
+  $$\operatorname{Var}\hat{b}=\frac {C^2c^2}{a^2\delta t^2 }[\delta t+\frac {\exp(2a \delta t)-1}{2a}-\frac {2(\exp(a \delta t)-1)}{a}]+O(n^{-1}).$$
+  $$E\hat{c^2}=c^2+F+O(n^{-1}).$$
+  $$\operatorname{Var}\hat{c^2}=\frac {3c^4}{\delta t n}+G+O(n^{-2}).$$
+ The constants $C, D, F, G$ are defined in the following.
+\end{theorem}
+\begin{proof}
+Let $\phi:=1+a\mathfrak{d} t_1$.   Without loss of generality, we assume $x_0=0$. %$EX(0)=0$, $EX(0)^2=0$.
+    From the discrete data, we compute $$ S(i,j)=EX_iX_{j}=\phi^{|i-j|}[\frac {c^2\mathfrak{d} t_1(1-\phi^{2j})}{1-\phi^2}+\frac {b^2}{a^2}(1-\phi^j)^2].$$
+Since
+  \begin{eqnarray*}\sum E X_i=\frac {b}{a}(\frac {1-\phi^n}{1-\phi}-n). \end{eqnarray*}
+
+ \begin{eqnarray*}\sum_{i>j} S(i,j)&=&(\frac {c^2}{a}\frac 1 {1+\phi}+\frac {b^2}{a^2})(\frac {(n-1)\phi}{1-\phi}+\phi^{n}\frac {\phi-\phi^{-(n-2)}}{(1-\phi)^2})\\&&+(\frac {b^2}{a^2}-\frac {c^2}{a}-\frac 1 {1+\phi})(\frac {\phi-\phi^{2n-1}}{(1-\phi)^2(1+\phi)}-\frac {1-\phi^{n-1}}{(1-\phi)^2}\phi^n)\\&&-\frac {2b^2}{a^2}(\frac {\phi-\phi^{n}}{(1-\phi)^2}-\frac {(n-1)\phi}{1-\phi}). \end{eqnarray*}
+
+%$$E\sum X_j=\frac{E(X_n-x_0)}{a\mathfrak{d} t_1}<\infty $$
+\begin{eqnarray*}
+n^{-1}\sum EX_{j}^2&=&-\frac {c^2}{2a}[1-\frac {\phi^{2n}-1}{2a \delta t}]+\frac {b^2}{a^2}[1+\frac {2(1-\phi^n)} {a\delta t}
++\frac{\phi^{2n}-1}{2a \delta t}]\\&&-(\frac {c^2} {8a\delta t}+\frac {b^2}{4a^3\delta t})\mathfrak{d} t_1(\phi^{2n}-1)+ O(n^{-2}).\\
+n^{-2}E(\sum X_{j})^2&=&\frac {c^2}{a^2\delta t^2}[\delta t+\frac {\phi^{2n}-\phi}{2a }-\frac {2(\phi^n-\phi)} {a}\\&&+\frac {b^2}{a^2}[1+\frac {2(1-\phi^n)} {a\delta t}
++\frac{(\phi^{n}-1)^2}{a^2 \delta t^2}]\\&&-\frac {c^2}{\delta t^2}\mathfrak{d} t_1[\phi^{2n}-\phi]+O(n^{-2}).\\
+%\sum_{i>j} S(i,j)&=&\frac {c^2}{a}\frac 1 {1+\phi}[\frac {n+n\phi+n\phi^n+(n-1)\phi^{n+1}-\phi^{2(n-1)}}{1-\phi^2}\\&&+\frac {1-2\phi^2-\phi^{n}+\phi^{2n+1}+\phi^{n+1}}{(1-\phi^2)^2}].
+\end{eqnarray*}
+
+\[
+E ( X_{j}\mathfrak{d} W_j X_i^2)=
+\begin{cases}
+0, &\text{if $i\leq j$;}\\
+2c\mathfrak{d} t_1\phi^{i-j-1}(\phi^{2(i-j)-1}EX_j^2\\\quad\quad+\frac b a (\phi^j-1)EX_j), &\text{if $i>j$.}
+\end{cases}
+\]
+ Then
+     \begin{eqnarray*}
+B_1:&=&\frac 1 {\mathfrak{d} t_1}\lim_{n\to \infty} n^{-2}\sum E\mathfrak{d} W_j X_i=c\lim_{n\to \infty}n^{-2}[\frac {n-1}{1-\phi}+\phi^{n}\frac {\phi-\phi^{-(n-1)}}{(1-\phi)^2}]\\
+&=& \frac { c(\exp(a\delta t)-1)} {a^2\delta t^2}-\frac c {a\delta t}. \\
+B_2:&=&\frac 1 {\mathfrak{d} t_1}\lim_{n\to \infty} n^{-2}\sum_{i>j}E( X_{j}\mathfrak{d} W_j X_i^2)\\&=&\lim_{n\to \infty}
+2cn^{-2}[\frac {c^2\phi^{-1}}{a(1-\phi^2)(1+\phi)}(\frac{\phi^2-\phi^{2n}}{1-\phi^2}-(n-1)\phi^{2n}-(n-1)\phi^2\\&&+\frac {\phi^2-\phi^{-2(n-2)}}{\phi^2-1}\phi^{2n})+\phi^{-1}\frac {b^2}{a^2(1-\phi^2)}
+((n-1)\phi^2\\&&-\frac {\phi^2-\phi^{-2(n-2)}}{\phi^2-1}\phi^{2n}-2\frac {\phi^2-\phi^{n+1}}{1-\phi}+2\frac {\phi-\phi^{-n+2}}{\phi-1}\phi^{2n}\\&&+\frac {\phi^2-\phi^{2n}}{1-\phi^2}-(n-1)\phi^{2n}) ].
+ \end{eqnarray*}
+ \begin{eqnarray*}
+B_3:&=&\lim_{n\to \infty} n^{-2}E\sum X_j^2 \sum X_i^2\\&=&\frac {c^4}{a^2}(2\frac {\exp(2a\delta t)-1}{a^2\delta t^2}+1)+\frac {2b^2c^2} {a^3}(2\frac {1-\exp(2a\delta t)}{a^2\delta t^2}-1-2\frac {\exp(a\delta t)-1}{a^2\delta t^2}\\&&-2\frac {(1-\exp(2a\delta t))(1-\exp(a\delta t))}{a^2\delta t^2})+\frac {b^4} {a^4}(1+2\frac {\exp(2a\delta t)-1}{a^2\delta t^2}\\&&+4\frac {(\exp(a\delta t)-1)^2}{a^2\delta t^2}-4\frac {(1-\exp(2a\delta t))(1-\exp(a\delta t))}{a^2\delta t^2}) \\&=&\frac {2c^4}{a^2}(2\frac {1-\exp(2a\delta t)}{a^2\delta t^2}-\frac 1 {\delta t})+\frac {4b^2c^2} {a^3}(\frac {1}{a\delta t}+2\frac {\exp(a\delta t)+1}{a^2\delta t^2})\\&&{}+\frac {2b^4} {a^4}(-\frac {1}{a\delta t}+6\frac {1-\exp(2a\delta t)}{a^2\delta t^2}-8\frac {1-\exp(a\delta t)}{a^2\delta t^2}) \end{eqnarray*}
+ \begin{eqnarray*}
+&=&{}\frac {c^4}{a^2}(1+2\frac {1-\exp(2a\delta t)}{a\delta t}-\frac {1-\exp(4a\delta t) }{a\delta t})+\frac {2b^2c^2} {a^3}(-\frac {1-\exp(4a\delta t)}{a\delta t}-1\\&&{}+2\frac {1-\exp(3a\delta t)}{a\delta t}-2\frac {1-\exp(a \delta t)}{a\delta t})+\frac {b^4} {a^4}(1-\frac {1-\exp(4a\delta t)}{a\delta t}\\&&{}-6\frac {1-\exp(2a\delta t)}{a\delta t}-4\frac {1-\exp(a\delta t)}{a\delta t}-4\frac {1-\exp(3a\delta t)}{a\delta t}).\end{eqnarray*}
+ \begin{eqnarray*}
+B_4:&=&\lim_{n\to \infty} n^{-2}\sum S(i,j)=\lim_{n\to \infty}n^{-2}E(\sum X_{j})^2\\&=&
+\frac {c^2}{a^2\delta t^2}[\delta t+\frac {\exp(2a\delta t)-1}{2a }-\frac {2(\exp(a\delta t)-a)} {a}\\&&+\frac {b^2}{a^2}[1+\frac {2(1-\exp(a\delta t))} {a\delta t}
++\frac{(\exp(a\delta t)-1)^2}{a^2 \delta t^2}].\\
+    B_5:&=&\frac 1 {\mathfrak{d} t_1^2}\lim_{n\to \infty} n^{-2}\sum E(\mathfrak{d} W_iX_j)^2.\\
+                B_6: &=&\lim_{n\to \infty} n^{-2}(\sum EX_j)^2=\lim_{n\to \infty}n^{-2}E(\sum X_{j})^2\\&=&\frac {c^2}{a^2\delta t^2}[\delta t+\frac {\exp(2a\delta t)-1}{2a }-\frac {2(\exp(a\delta t)-1)} {a}\\&&+\frac {b^2}{a^2}[1+\frac {2(1-\exp(a\delta t))} {a\delta t}
++\frac{(\exp(a\delta t)-1)^2}{a^2 \delta t^2}].
+\end{eqnarray*}
+Define  \begin{eqnarray*}
+ u_1:&=&\lim_{n\to+\infty}n^{-1}\sum E X_{j+1}X_j-\lim_{n\to+\infty}n^{-2}E\sum X_{j+1} \sum X_j\\&=&\lim_{n\to+\infty}n^{-1}\sum E X_{j}^2-\lim_{n\to+\infty}n^{-2}E(\sum X_j)^2\\
+&=&-\frac {c^2}{2a}[\frac 2 {a\delta t}+1+\frac {\exp(2a \delta t)-1}{a^2\delta t^2}-\frac {\exp(2a \delta t)-1}{2a \delta t}-\frac{4(\exp(a \delta t)-1)}{a^2\delta t^2}]\\&&+\frac {b^2}{a^2}[\frac{\exp(2a \delta t)-1}{2a \delta t}-\frac{(\exp(a \delta t)-1)^2}{a^2 \delta t^2}].\\
+u_2:&=&\lim_{n\to+\infty}n^{-1}E\sum X_j^2-\lim_{n\to+\infty}n^{-2}E(\sum X_j)^2=u_1.\\
+\end{eqnarray*}
+
+Note that
+$$(1+\frac x n)^n=\exp(x)(1-\frac {x^2}{2n}+O(n^{-2})).$$
+We have
+ \begin{eqnarray*}
+&&E(n^{-1}\sum  X_{j+1}X_j-n^{-2}\sum X_{j+1} \sum X_j-u_1)=O(\frac 1 n).\\
+&&E(n^{-1}\sum X_j^2-n^{-2}(\sum X_j)^2-u_2)=O(\frac 1 n).
+\end{eqnarray*}
+And
+ \begin{eqnarray*}
+&&E(u_1-n^{-1}\sum  X_{j+1}X_j-n^{-2}\sum X_{j+1} \sum X_j)^2=O(\frac 1 n).\\
+&&E(u_2-n^{-1}\sum X_j^2-n^{-2}(\sum X_j)^2)^2=O(\frac 1 n).
+\end{eqnarray*}
+%$$E\sum X_j=\frac{E(X_n-x_0)}{a\mathfrak{d} t_1}<\infty $$
+
+Now we analysis the errors, the errors are expressed by the data. Denote $t_1=n^{-1}\sum X_{j+1}X_j-u_1$, $t_2=n^{-1}\sum X_j^2-u_2$, $t_3=n^{-1}\sum X_{j+1}$, $t_4=n^{-1}\sum X_{j}$. Let $f(x,y)=\frac {u_1+x}{u_2+y}$,  then by the multivariate Taylor expansion
+ \begin{eqnarray*}\label{a1}
+ \frac {n^{-1}\sum X_{j+1}X_j-n^{-2}\sum X_{j+1} \sum X_j}{n^{-1}\sum X_j^2-n^{-2}(\sum X_j)^2}=\frac {u_1+t_1-t_3t_4} {u_2+t_2-t_4^2}=\frac {u_1}{u_2}+A_1+A_2+O_p(n^{-\frac 3 2}),
+\end{eqnarray*}
+ where  \begin{eqnarray*}A_1&=&\frac{t_1}{u_2}-\frac {u_1t_2}{u_2^2},\\ A_2&=&-\frac {t_3t_4}{u_2}+\frac {u_1t_4^2}{u_2^2}-\frac {t_1t_2}{u_2^2}+\frac {u_1t_2^2}{u_2^3}.\end{eqnarray*}
+ The computation gives
+ \begin{eqnarray*}
+   %Et_1&=&-\frac {c^2 \delta t} {2n}[\exp(2 a \delta t)+1-\frac {\exp(2a\delta t)-1}{2a\delta t}]+\frac {b^2 \delta t} {an}[2\exp(a \delta t)+\frac {\exp(a\delta t)-1}{a\delta t}-1]\\&&-\frac {b^2 \delta t} {an}[\exp(2a \delta t)-1-\frac {2(1-\exp(a\delta t))}{a\delta t}-\frac {\exp(2a\delta t)-1}{2a\delta t}]+O(n^{-2}),
+  E(t_1-t_2)=E(n^{-1}\sum X_{j+1}X_j-n^{-1}\sum X_j^2)=a\mathfrak{d} t_1n^{-1}\sum EX_j^2+b\mathfrak{d} t_1n^{-1}\sum EX_j.
+ \end{eqnarray*}
+ $$Et_3t_4={n^{-2}}\sum S(i,j+1).$$
+ $$Et_4^2= {n^{-2}}\sum S(i,j).$$
+
+   From equation \eqref{e22}, we have
+   \begin{eqnarray*}
+   EX_{j+1}X_i=\phi EX_jX_i+b\mathfrak{d} t_1E X_j+cE\mathfrak{d} W_j X_i.
+ \end{eqnarray*}
+ So
+    \begin{eqnarray*}
+ S(i,j+1)=\phi S(i,j)+b\mathfrak{d} t_1E X_j+cE\mathfrak{d} W_j X_i.
+ \end{eqnarray*}
+
+    \begin{eqnarray*}
+E(t_4^2-t_3t_4)=-a\mathfrak{d} t_1 n^{-2}\sum S(i,j)-b\mathfrak{d} t_1n^{-1}\sum E X_j-cn^{-2}\sum E\mathfrak{d} W_j X_i.
+ \end{eqnarray*}
+   \begin{eqnarray*}
+E(t_2^2-t_1t_2)&=&u_2a\mathfrak{d} t_1n^{-1}\sum EX_j^2+u_2b\mathfrak{d} t_1n^{-1}\sum EX_j -(a\mathfrak{d} t_1n^{-2}E\sum X_j^2\sum X_i^2\\&&+b\mathfrak{d} t_1n^{-2}E\sum X_j \sum X_i^2+cn^{-2}E\sum \mathfrak{d} W_jX_j\sum X_i^2).\end{eqnarray*}
+     Denote
+  $$C=\frac {b^2}{au_1}(\frac {\exp(a\delta t)-1}{a\delta t}-1)-\frac {cB_1}{u_1}-\frac {cB_2}{u_1^2}-\frac {aB_3}{u_1^2}.$$
+ We have
+  \begin{eqnarray}E\hat{a}=a+C+O(n^{-1}).\end{eqnarray}
+
+\begin{eqnarray*}
+    B_3-B_6=\frac 1 {\delta t} n^{-1}\lim_{n\to \infty}\sum EX_j^2-\lim_{n\to \infty}n^{-2}E(\sum X_{j})^2.
+\end{eqnarray*}
+\begin{eqnarray*}
+    B_5-B_6=\frac 1 {\delta t} n^{-1}\lim_{n\to \infty}\sum EX_j^2-\lim_{n\to \infty}n^{-2}E(\sum X_{j})^2.
+\end{eqnarray*}
+$$D=\frac {a^2(B_3-B_6)}{u_1^2}+\frac {b^2(B_5-B_6)}{u_1^2}+\frac {c^2B_4}{u_1^2}+\frac {2acB_2}{u_1^2}.$$
+Then
+ \begin{eqnarray}\operatorname{Var}\hat{a}= {D}+O(n^{-1}).\end{eqnarray}
+ \begin{eqnarray*}\hat{b}&=&\frac {\sum X_{j+1}-\sum X_{j}-\hat{a}\mathfrak{d} t_1\sum X_j}{\delta t}\\&=&\frac {\sum X_{j+1}-\sum X_{j}-{a}\mathfrak{d} t_1\sum X_j}{\delta t}- {Cn^{-1}\sum X_j}+O_p(n^{-1}).\end{eqnarray*}
+ So
+  $$E\hat{b}=b+C\frac b a( \frac {\exp(a\delta t)-1}{a\delta t}-1)+O(n^{-1}).$$
+  $$\operatorname{Var}\hat{b}=\frac {C^2c^2}{a^2\delta t^2 }[\delta t+\frac {\exp(2a \delta t)-1}{2a}-\frac {2(\exp(a \delta t)-1)}{a}]+O(n^{-1}).$$
+ Since   \begin{eqnarray*}\hat{c}^2=\frac 1 {\delta t} \sum{(X_{j+1}-X_{j}-({a}X_{j}+{b})\mathfrak{d}  t_{j})^2}+Cn^{-1}\sum X_{j}^2+O_p(n^{-1}). \end{eqnarray*}
+ Denote $$F=C\lim_{n\to \infty}n^{-1}\sum EX_{j}^2;$$
+  $$G=\frac 1 {\mathfrak{d} t_1^2}\lim_{n\to \infty} n^{-2}\sum E(\mathfrak{d} W_iX_j)^2.$$
+We have
+  $$E\hat{c^2}=c^2+F+O(n^{-1}).$$
+  $$\operatorname{Var}\hat{c^2}=\frac {3c^4}{\delta t n}+G+O(n^{-2}).$$
+  \end{proof}
+   \begin{remark}
+Phillips et al.~\cite{Pe} used the  estimator
+   $$\hat{c}^2=\frac 1 n\sum (X_{j+1}-X_{j})^2.$$
+ \end{remark}
+\begin{example}
+Consider the constant coefficient \textsc{sde}
+\begin{eqnarray}
+dX=a\, dt+c\, dW,   \quad  X(0)=x_0. \label{1.11}
+\end{eqnarray}
+The solution of  \eqref{1.11} is $X(t)=x_0+at+cW$. The microscale increments $\mathfrak{d} X_j= X_{j+1}- X_{j}$, $j=0, \ldots, n-1$, from a burst of simulation of small time $\delta t=t_n-t_0$  are distributed normally with mean $a\mathfrak{d}  t_j$ and variance $b^2\mathfrak{d} t_j$, $\mathfrak{d} t_j=t_{j+1}-t_j$.
+
+Solve $\hat{a}$ and $\hat{b}$.
+\begin{eqnarray}\label{ex1}\hat{a}=\frac {\delta X}{\delta t},\end{eqnarray}
+where $\delta X=X_{t_{n}}-X_{t_0}$.
+\begin{eqnarray}\label{ex2}\hat{c}^2=\sum\frac 1 {\delta t}(\mathfrak{d} X_j-\hat{a}\mathfrak{d} t_j)^2.
+\end{eqnarray}
+The errors of parameter estimates  depend on the number of data values and microscale time step.
+
+\begin{eqnarray*}&&E\hat{a}=a; \\&&\operatorname{Var} \hat{a}=\frac { c^2}{\delta t};\\&&E\hat{c}^2=
+{ c^2 (1-\frac 1 n)};\\
+\operatorname{Var} \hat{c}^2&&=\operatorname{Var}\left[\sum \frac {1} {\delta t}(\mathfrak{d} X_j-(a+b\frac {\delta W}{\delta t})\mathfrak{d} t_j)^2\right]\\&&= \frac {c^4}{{\delta t}^2}\operatorname{Var}\sum\left[(\mathfrak{d} W_j)^2-2\mathfrak{d} W_j\times \frac{\delta W}{\delta t}\mathfrak{d} t_j+ \frac{{\delta W}^2}{{\delta t}^2}\mathfrak{d} t_j^2\right]\\&&= \frac {c^4}{{\delta t}^2}\operatorname{Var}\left[\sum( \mathfrak{d} W_j)^2-\frac {(\delta W)^2 }{n }\right]\\&&= \frac {c^4}{{\delta t}^2}\left[\operatorname{Var}(\sum( \mathfrak{d} W_j)^2)+\operatorname{Var}{\frac {(\delta W)^2 }{n }}-2\operatorname{Cov}(\sum( \mathfrak{d} W_j)^2,\frac {(\delta W)^2 }{n })\right]\\&&= \frac {c^4}{{\delta t}^2}\left[\operatorname{Var}(\sum( \mathfrak{d} W_j)^2)+\operatorname{Var}{\frac {(\delta W)^2 }{n }}-\frac 2 n \operatorname{Cov}(\sum( \mathfrak{d} W_j)^2,  \sum( \mathfrak{d} W_j)^2)\right]\\&&= \frac {c^4}{{\delta t}^2}\left[(1-\frac 2 n)\operatorname{Var}(\sum( \mathfrak{d} W_j)^2)+\frac 1 {n^2}\operatorname{Var}{{(\delta W)^2 }{ }}\right]\\\
+&&=\frac {2}{n} c^4 - \frac {2}{n^2 }b^4.
+\end{eqnarray*}
+\end{example}
+\begin{example}
+\begin{eqnarray}\label{e22}
+dX=aXdt+c\,dW,   \quad  X(0)=x_0.
+\end{eqnarray}The solution is $X_t=e^{at}(x_0+c\int_0^te^{-as}dW_s)$.   We use the Euler  scheme  to discrete   the equation \eqref{e22}
+\begin{eqnarray}\label{e2}
+X_{j+1}-X_j=aX_j\mathfrak{d} t_j+c\mathfrak{d} W_j\end{eqnarray}
+From the maximum likelihood estimation, we find
+
+\begin{eqnarray}\hat{a}=\frac {\sum  X_{j+1}X_j-\sum X_j^2} {\sum X_j^2\mathfrak{d}t_j}.\label{ex3} \end{eqnarray}
+ \begin{eqnarray}
+\hat{c}^2=\frac 1 n\sum \frac { (X_{j+1}-X_{j}-\hat{a}X_{j}\mathfrak{d}  t_{j})^2}{{} \mathfrak{d}  t_j}. \label{ex4}\end{eqnarray}
+
+Let $\phi:=1+a\mathfrak{d} t_1$.
+From the data, we compute $$EX_i^2=c^2\mathfrak{d} t_1\frac {1-\phi^{2i}}{1-\phi^2};\quad EX_iX_{i-1}=c^2\mathfrak{d} t_1\phi\frac {1-\phi^{2i}}{1-\phi^2}.$$ Define \ \begin{eqnarray*}
+u_1:&=&\lim_{n\to+\infty}n^{-1}E\sum X_j^2=-\frac {c^2}{2a}(1-\frac {\exp(2a \delta t)-1}{2a\delta t}).\\
+ u_2:&=&\lim_{n\to+\infty}n^{-1}\sum E X_{j+1}X_j=u_1.\\
+\end{eqnarray*}
+%$$E\sum X_j=\frac{E(X_n-x_0)}{a\mathfrak{d} t_1}<\infty $$
+ Now we analysis the errors, the errors are expressed by the data.  Let $f(x,y)=\frac x y$,  then by the multivariate Taylor expansion
+ \begin{eqnarray*}\label{a1}
+\frac {n^{-1}\sum X_{j+1}X_j} {n^{-1}\sum X_j^2}=\frac {u_2}{u_1}+\frac 1 {u_1}(n^{-1} \sum X_{j+1}X_j-u_2)-\frac {u_2}{u_1^2}(n^{-1} \sum X_j^2-u_1) -\frac 1 {u_1^2}\nonumber\\ \quad( n^{-1}\sum X_{j+1}X_j-u_2)(n^{-1} \sum X_j^2-u_1)+\frac {u_2} {u_1^3}(n^{-1}\sum  X_j^2-u_1)^2+O_p(n^{-\frac 3 2}).\newline
+\end{eqnarray*}
+Compute \begin{eqnarray*}
+n^{-2}\sum( EX_iX_j)^2&=&\frac 1 {u_1^2}\frac {2c^4}{a^2(1+\phi)^2}n^{-2}[\frac {(n-1)\phi^2}{1-\phi^2}-\frac {\phi^4-\phi^{2n+2}}{(1-\phi^2)^2}+\frac {\phi^2-\phi^{4n-2}}{(1-\phi^2)^2(1+\phi^2)}\\
+&&-\frac {\phi^{2n}-\phi^{4n-2}}{(1-\phi^2)^2}]-\frac {4c^4}{a^2(1+\phi)^2}n^{-1}\frac {1-\phi^{2n}}{1-\phi^2}\\&&+\frac {c^4}{a^2(1+\phi)^2}n^{-1}[n-\frac {2(1-\phi^{2n})}{1-\phi^2}+\frac {1-\phi^{4n}}{1-\phi^4}].
+\end{eqnarray*}
+\begin{eqnarray*}E\frac {n^{-1} {\sum X_jX_{j-1}}}{n^{-1} \sum X_j^2}=\frac 2 {u_1}a\mathfrak{d} t_1n^{-1}\sum EX_j^2-\frac 1 {u_1^2}a\mathfrak{d} t_1n^{-2}\sum (EX_j^2)^2\\-\frac {2a\mathfrak{d}t_1} {u_1^2}n^{-2}\sum( EX_iX_j)^2+O(n^{-2}).\end{eqnarray*}
+ We show that
+ $$E\hat{a}=a-C+O(n^{-1}),$$
+ where $$C=\frac {c^4}{u_1^2a}\left [\frac 1 2 +\frac 7 {8a \delta t}-\frac 1 {8a^2\delta t^2}-\frac {3\exp(2a\delta t)}{2a\delta t}+\frac {\exp(4a\delta t)}{8a\delta t}+\frac {\exp(4a\delta t)}{8a^2\delta t^2}\right].$$
+ \begin{eqnarray*}
+\frac {n^{-1} {\sum X_jX_{j-1}}}{n^{-1} \sum X_j^2}&=&\frac 1 {u_1^2} \bigg [ {\operatorname{Cov}(n^{-1}\sum X_{j+1}X_j, n^{-1}\sum X_{i+1}X_i)}\\&&+\operatorname{Cov}(n^{-1}\sum X_i^2,n^{-1}\sum X_j^2)\\&&-2\operatorname{Cov}(n^{-1}\sum X_{j+1}X_j, n^{-1}\sum X_i^2)\bigg ].\end{eqnarray*}
+\begin{eqnarray*}
+\operatorname{Var}\frac {n^{-1} {\sum X_jX_{j-1}}}{n^{-1} \sum X_j^2}&=&\frac {n^{-2}} {u_1^2} \bigg [ a^2\mathfrak{d} t_1^2\operatorname{Cov}(\sum X_i^2,\sum X_j^2)\\&&+c^2\operatorname{Cov}(\sum X_{j}\mathfrak{d} W_j, \sum X_j\mathfrak{d} W_j)\bigg ]+O(n^{-3})\\&=&\frac {c^4\mathfrak{d} t_1^2}{u_1^2}(-\frac 1{2a\delta t}-\frac {1-\exp(2a\delta t)}{4a^2\delta t^2})+O(n^{-3})\\&=&\frac 1 n (1-\exp(2a\mathfrak{d}t_1 ))+O(n^{-3}).\end{eqnarray*}
+We have
+ $$\operatorname{Var}\hat{a}=-\frac {2a}{\delta t}+O(n^{-1}).$$
+ From the result of $\hat{a}$, we have
+ \begin{eqnarray*}
+  \hat{c}^2=\frac 1 {\delta t}\sum  (X_{j+1}-X_{j}-\hat{a}X_j\mathfrak{d}t_j)^2=\frac 1 {\delta t}\sum  (X_{j+1}-X_{j}-{a}X_j\mathfrak{d}t_j)^2+O_P(\frac 1 n).
+ \end{eqnarray*}
+ Then
+ $$E\hat{c}^2=c^2+O(\frac 1 n);$$
+$$\operatorname{Var} \hat{c}^2=\frac {2c^4}{ n}+O(\frac 1 {n^2}).$$
+
+\end{example}
+\section{Monte Carlo simulation results}
+Since the errors of the expression of the Theorem \ref{th1} is hard to application. For the stationary case~\cite{Tang}, the expressions are also complicated.  We give an simulation order of the parameters  from the Monte Carlo  simulation in this section.  Firstly we simulate the parameters from the maximum likelihood  estimation  for some \textsc{sde}s.
+
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{SDE}
+$
+dX=a\, dt+c\, dW,   \quad  X(0)=1.
+$  The burst  $\delta t=2$. The numbers of data $n=1000$. The maximum likelihood expressions are equations \eqref{ex1} and \eqref{ex2}. The errors are expressed as the mean  and variance of  $a$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & c &  a & c& a & c\\
+  &  True values  &1 & 0.2 & 2 & 0.5&3 &0.8 \\
+  \midrule
+&Mean&  0.9991 & 0.0400&  1.9896&0.2493& 3.0144& 0.6386 \\
+& Variance &0.0197&3.0320e-06 &  0.1139 &  1.2376e-04 & 0.2992&7.8635e-04 \\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{SDE}
+$
+dX=a\, dt+c\, dW,   \quad  X(0)=2.
+$  The burst  $\delta t=5$. The numbers of data $n=1500$. The maximum likelihood expressions are equations \eqref{ex1} and \eqref{ex2}. The errors are expressed as the mean  and variance of  $a$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & c &  a & c& a & c\\
+  &  True values  &1 & 0.2 & 2 & 0.5&3 &0.8 \\
+  \midrule
+&Mean& 0.9969 &0.0399& 2.0016&0.2494& 2.9945& 0.6387 \\
+& Variance &0.0078&2.0527e-06 &  0.0488 &  7.9425e-05&0.1183&5.4581e-04 \\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+
+
+Secondly we set varied parameters to simulate the power law of the errors. Then we have the simulate errors. The power law we simulate equation \eqref{1.11} is quite closed to the analytic expression errors we compute.
+
+\begin{eqnarray*}&&E\hat{a}\propto a; \\ &&\operatorname{Var} \hat{a}\propto \frac { c^2}{\delta t};\\
+&&E\hat{c}^2\propto
+ c^2 ; \\
+&&\operatorname{Var} \hat{c}^2\propto \frac {1}{n} c^4.
+\end{eqnarray*}
+
+
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{SDE}
+$
+dX=aX\, dt+c\, dW,   \quad  X(0)\sim N(0, -\frac {c^2}{2a} ).
+$  The burst  $\delta t=2$. The numbers of data $n=500$. The maximum likelihood expressions are equations \eqref{ex3} and \eqref{ex4}. The errors are expressed as the mean  and variance of  $a$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & c &  a & c& a & c\\
+  &  True values  &-1 & 0.2 &- 2 & 0.5&-3 &0.8 \\
+  \midrule
+&Mean&  -1.7954 & 0.0398& -2.8753&0.2493& -3.8746&0.6389 \\
+& Variance &2.8198&6.5877e-06 & 3.4996 &  2.4565e-04 & 4.7498& 0.0016 \\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{SDE}
+$
+dX=aX\, dt+c\, dW,   \quad  X(0)\sim N(0, -\frac {c^2}{2a} ).
+$  The burst  $\delta t=4$. The numbers of data $n=1000$. The maximum likelihood expressions are equations \eqref{ex3} and \eqref{ex4}. The errors are expressed as the mean  and variance of  $a$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & c &  a & c& a & c\\
+  &  True values  &-2.1 & 0.03 &- 3.5 & 0.04&-4.5 &0.05 \\
+  \midrule
+&Mean& -2.6047 &8.9910e-04&-3.9577&0.0016& -4.8337&0.0025 \\
+& Variance &1.5889&1.6351e-09 &2.3352& 4.9424e-09 & 2.4358&1.2806e-08 \\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+The simulation power law of simulation \eqref{e22} is a little different from the analysis expression. This is because the errors of simulation  from the maximum likelihood  estimation. The errors depends on the burst time $\delta t$.
+\begin{eqnarray*}&&E\hat{a}\propto a; \\ &&\operatorname{Var} \hat{a}\propto \frac {a c}{\delta t};\\
+&&E\hat{c}^2\propto
+ c^2 ; \\
+&&\operatorname{Var} \hat{c}^2\propto \frac {1}{n} c^4.
+\end{eqnarray*}
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{SDE}
+$
+dX=(aX+b)dt+c\,dW. \quad  X(0)=2.
+$  The burst  $\delta t=1$. The numbers of data $n=1500$. The maximum likelihood expressions are equations \eqref{ex3} and \eqref{ex4}. The errors are expressed as the mean  and variance of  $a$, $b$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & b &  c & a& b & c\\
+  &  Truev alues  &3.5& 1 &0.3 & 4&2 &0.4 \\
+  \midrule
+&Mean& 3.5003 &0.9832& 0.08990&4.0000& 2.0172&0.1597 \\
+& Variance & 2.4085e-04&0.1939 &1.0845e-05 &  1.3803e-04 &0.2961& 3.2811e-05 \\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{SDE}
+$
+dX=(aX+b)dt+c\,dW. \quad  X(0)=2.
+$  The burst  $\delta t=1.7$. The numbers of data $n=5500$. The maximum likelihood expressions are equations \eqref{ex3} and \eqref{ex4}. The errors are expressed as the mean  and variance of  $a$, $b$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & b &  c & a& b & c\\
+  &  True values  &1.2& 0.1 &0.2 & 2.5&1 &0.8 \\
+  \midrule
+&Mean& 1.2007 & 0.1041&  0.0400& 2.5006& 1.0060& 0.6395 \\
+& Variance &  0.0016& 0.0944 & 5.3574e-007 & 2.2978e-004 &  0.6926& 1.4544e-004 \\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+
+
+The simulation equation \eqref{14} of the power law is following.
+ \begin{align*}&E\hat{a}\propto a;\\
+ &\operatorname{Var}\hat{a}\propto \frac {c^2}{a^{3.7}b^{0.5}\delta t^{5.2}};\\
+&E\hat{b}\propto b;\\
+ &\operatorname{Var}\hat{b}\propto \frac {c^2}{a\delta t^{2}};\\
+& E\hat{c^2}\propto c^2;\\
+ &\operatorname{Var}\hat{c^2}\propto \frac {c^4}{n}.\\
+ \end{align*}
+ \subsection{Two bursts}
+\begin{eqnarray} \label{14}
+dX=(aX+b)dt+c\,dW,   \quad  X(0)=0.
+\end{eqnarray}
+Suppose the data is from two same length  bursts, denoted as  $\delta $t. Denote the data is $X_0, X_1,\ldots, X_n$, $X_{1,0}, \ldots, X_{1,n}$.
+The Euler scheme to discrete the equation \eqref{14} are
+\begin{eqnarray*}
+X_{j+1}-X_j=(a X_j+b)\mathfrak{d} t_1+c\mathfrak{d} W_j,\end{eqnarray*}
+$j=0, \ldots, n-1, $ and
+\begin{eqnarray*}
+X_{1,j+1}-X_{1,j}=(a X_{1,j}+b)\mathfrak{d} t_1+c\mathfrak{d} W_{1,j},\end{eqnarray*}$j=0,\ldots, n-1 $.  $X_{1, 0}= \exp{a(\delta t+\Delta t)}(x_0+b\int _0^{\delta t+\Delta t}\exp({-as})ds+c\int _0^{\delta t+\Delta t}e^{-as}dW_s)$. Denote $dX_j=X_{j+1}-X_j$, $dX_{1,j}=X_{1,j+1}-X_{1,j}$. Ignoring the $X_{1, 0}$ component.
+ We find
+\begin{eqnarray}\hat{a}=\frac n {\delta t}  \frac {2n\sum X_{j}dX_j-2n\sum X_{1,j}dX_{1,j}-(\sum dX_j+\sum dX_{1,j}) (\sum X_j+\sum X_{1,j}) }{2n\sum X_j^2+2n\sum X_{1,j}^2-(\sum X_j+\sum X_{1,j})^2};\nonumber \\  \label{1}\end{eqnarray}
+\begin{eqnarray}\hat{b}&=&\frac { (\sum X_{j+1}-\sum X_{j}-\hat{a}\mathfrak{d} t_1\sum X_j)+ (\sum X_{1,j+1}-\sum X_{1,j}-\hat{a}\mathfrak{d} t_1\sum X_{1,j})}{2\delta t }\nonumber\\ &=&\frac n {\delta t}  \frac {(\sum dX_j+\sum dX_{1,j})(\sum X_j^2+\sum X_{1,j}^2)-(\sum X_jdX_j+\sum X_{1,j}dX_{1,j})(\sum X_j+\sum X_{1,j})^2 }{2n\sum X_j^2+2n\sum X_{1,j}^2-(\sum X_j+\sum X_{1,j})^2};\nonumber \\ \label{2}\end{eqnarray}
+\begin{eqnarray}\hat{c}^2&=&\frac 1 {2\delta t}\bigg \{ \left [\sum { ( dX_{j}-(\hat{a}X_{j}+\hat{b})\mathfrak{d}  t_{j})^2}\right]\nonumber \\ \quad&& +\left[\sum{(dX_{1,j}-(\hat{a}X_{1,j}+\hat{b})\mathfrak{d}  t_{1,j})^2}\right]\bigg \}.\label{3}\end{eqnarray}
+The simulation equation \eqref{14} of the power law is following.
+ \begin{align*}&E\hat{a}\propto a;\\
+ &\operatorname{Var}\hat{a}\propto \frac {c^2}{a^{4}b\delta t^{3.4}};\\
+&E\hat{b}\propto b;\\
+ &\operatorname{Var}\hat{b}\propto \frac {c^2}{a^{0.5}\delta t^{1.2}};\\
+& E\hat{c}\propto c;\\
+ &\operatorname{Var}\hat{c}\propto \frac {c^2}{n}.\\
+ \end{align*}
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{sde}
+$
+dX=(aX+b)dt+c\,dW. \quad  X(0)=2.
+$  The two bursts  $\delta t=0.5$, $\Delta t=1.2$. The numbers of data $n=500$.  The errors are expressed as the mean  and variance of  $a$, $b$ and $c$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & b &  c & a& b & c\\
+  &  True values  &5.2& 2.1 &0.2 & 3.2&1.3 &0.1 \\
+  \midrule
+&One burst Mean& 5.214 &  2.110&  0.199& 3.207&  1.290&  0.099 \\
+& One burst Variance & 0.035& 0.474 & 0.006 & 0.053 & 0.329& 0.003\\
+  \midrule
+&Two bursts Mean& 5.213 &  2.101& 0.200& 3.205&  1.299&  0.100 \\
+& Two bursts Variance & 0.0000&  0.2441 & 0.004 & 0.000 & 0.130&  0.002\\
+  \bottomrule
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+
+\section{Errors of projective integration}
+
+The maximum likelihood estimation equation is
+\begin{eqnarray} \label{7.1}
+d\hat{X}=(\hat{a}\hat{X}+\hat{b})dt+\hat{c}\,dW,   \quad  \hat {X}(0)=0.
+\end{eqnarray}
+ From equation \eqref{14} and equation \eqref{7.1} we have
+ \begin{eqnarray}\label{2.1}
+d(\hat {X}-X)=\hat {a}(\hat {X}-X)dt+(\hat{a}-a)X dt+(\hat {b}-b) dt+{(\hat{c}-c)}\,dW.
+\end{eqnarray}
+From the analytic solution of equation \eqref{2.1},
+\begin{eqnarray*}E(\hat {X}_n-X_n)&=& E(\hat{a}-a)\int_0^{\delta t}X(s)\exp(\hat{a}(\delta t-s))ds\\&&\quad{} +E(\hat{b}-b)\int_0^{\delta t}\exp(\hat{a}(\delta t-s))ds\\& \leq & \delta t^{1/2}M (C^{1/2}+D^{1/2})+\mathrm{O}(n^{-1}),\end{eqnarray*}
+where $M$ is a constant.
+Consider the equations of the time step $\Delta t$.
+\begin{eqnarray} \label{7.2}
+d\hat{Y}=(\hat{a}\hat{Y}+\hat{b})dt+\hat{c}\,dW,   \quad  \hat {Y}(0)=\hat {X}_n.
+\end{eqnarray}
+\begin{eqnarray} \label{7.}
+d\hat{X}=(\hat{a}\hat{X}+\hat{b})dt+\hat{c}\,dW,   \quad  \hat {X}(0)=X_n.
+\end{eqnarray}
+The errors on projective integration time step $\Delta t$ is
+\begin{eqnarray*}E(Y_{\delta t+\Delta t}-X_{\delta t+\Delta t})&=&E\exp(\hat{a}\Delta t)(\hat {X}_n-X_n)\\&\leq&  \delta t^{1/2}M (C^{1/2}+D^{1/2})+\mathrm{O}{(\Delta t)}+\mathrm{O}(n^{-1}).\end{eqnarray*}
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{sde}
+$
+dX=(aX+b)dt+c\,dW. \quad  X(0)=2.
+$  The two bursts  $\delta t=0.7$, $\Delta t=1.8$. The numbers of data $n=550$. The maximum likelihood expressions are equations \eqref{1}, \eqref{3}  and \eqref{4}. The errors are expressed as the mean  and variance of  $a$, $b$ and $c^2$. }
+ \begin{tabular}{ccccccccc}
+  \toprule
+  &Parameters & a & b &  c & a& b & c\\
+  &  True values  &5.2& 2.1 &0.2 & 3.2&1.3 &0.1 \\
+  \midrule
+&Mean& 5.2000 &  2.0270&  0.0469& 3.1999&  1.1347&  0.0210 \\
+& Variance & 8.6288e-016& 6.6933e-006 & 1.2685e-010 & 2.2978e-004 & 0.0719&  2.5659e-006\\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+\begin{table}[htbp]
+  \caption{\label{tab1} We simulate the \textsc{sde}
+$
+dX=(aX+b)dt+c\,dW. \quad  X(0)=2.
+$   The maximum likelihood expressions are equations \eqref{1}, \eqref{3}  and \eqref{4}. The errors are expressed as the burst, the projective time step, the number of data. }
+ \begin{tabular}{cccccccccc}
+  \toprule
+  &Parameters  & n &  $\delta t$  & $\Delta t $& n  & $\delta t$&$\Delta t$\\
+  &  True values  & 550 &0.1 & 0.6&650 &0.2&1.1 \\
+  \midrule
+&Mean& &  -0.9980& & &  -3.0684& \\
+& Variance &  &0.1958 &  & & 1.3594&\\
+  \bottomrule
+ \end{tabular}
+
+\end{table}
+\begin{thebibliography}{99}
+\bibitem{Ait}    Y. Ait-Sahalia,  Maximum likelihood estimation of discretely sampled diffusions: a closed-form approximation approach. \emph{Econometrica}, \textbf{70}, 223--262, 2002.
+
+
+\bibitem{Jan}   S. Janson,  	
+Gaussian Hilbert Spaces. Cambridge University Pres, 1997.
+\bibitem{Bish}   Jaya P. N. Bishwal,  Parameter Estimation in Stochastic Differential Equations.
+Lecture Notes in Mathematics, 2008.
+\bibitem{Cha} K. S. Chan,   Consistency and Limiting Distribution of the Least Squares Estimator of a Threshold Autoregressive Model. \emph{Ann. Statist.},  \textbf{21} (1993), 520--533.
+\bibitem{Chen}   X.  P. Chen, A.  J. Roberts and I. G. Kevrekidis, Projective integration of expensive stochastic processes. \emph{ ANZIAM J.}, \textbf{ 52}(E), C661--C677.
+\bibitem{Klo}    P. E. Kloeden,  E. Platen, H. Schurz and  M. Sorensen, On effects of discretization on estimators  of drift parameters for diffusion processes. \emph{J. Appl. Prob.},
+\textbf{33}, 1061--1076, 1996.
+\bibitem{Pe}   P.  C.  B.  Phillips  and  J. Yu,   A two-stage realized volatility approach to estimation of diffusion processes with discrete data. \emph{Journal of Econometrics,}
+\textbf{150},   139--150,  2009.
+\bibitem{Ste}  M. I.    Stefano,  Simulation and Inference for Stochastic Differential Equations: With R Examples.   Springer, New York, 2008.
+
+\bibitem{Tang}    C. Y. Tang and S. X.
+Chen, Parameter estimation and bias correction for diffusion processes.
+\emph{Journal of Econometrics,}
+\textbf{149},  65-81, 2009.
+
+\bibitem{Yosh}   N. Yoshida,
+Estimation for diffusion processes from discrete observation.
+\emph{Journal of Multivariate Analysis}, \textbf{41}, 220--242, 1992.
+
+
+
+
+\end{thebibliography}
+
+\end{document} 
